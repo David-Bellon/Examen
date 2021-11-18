@@ -1,4 +1,5 @@
 import re
+from numpy import shares_memory
 import pandas as pd
 
 conversiones = pd.read_csv("conversiones.csv", sep = ";")
@@ -72,15 +73,14 @@ navegacion["convierte"] = data
 cars = {
     
 }
-urls = navegacion["url_landing"]
-for url in urls:
-    m = re.search("http(?:s?):\/(?:\/?)www\.metropolis\.com\/es\/(.+?)\/.*", url)
+
+for i in range(navegacion.shape[0]):
+    m = re.search("http(?:s?):\/(?:\/?)www\.metropolis\.com\/es\/(.+?)\/.*", str(navegacion._get_value(i, "url_landing")))
     if m != None:
         if m.groups()[0] in cars:
             cars[m.groups()[0]] += 1
         else:
             cars[m.groups()[0]] = 1
         
-
 for car in cars.keys():
     print("El coche", car, "ha sido buscado", cars[car], "veces")
