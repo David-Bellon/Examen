@@ -1,5 +1,5 @@
+import re
 import pandas as pd
-from pandas.core.indexing import convert_missing_indexer
 
 conversiones = pd.read_csv("conversiones.csv", sep = ";")
 navegacion = pd.read_csv("navegacion.csv", sep = ";")
@@ -49,5 +49,38 @@ for i in range(navegacion.shape[0]):
     number_of_users.add(navegacion._get_value(i, "id_user"))
     if navegacion._get_value(i, "user_recurrent") == True:
         recurrente.add(navegacion._get_value(i, "id_user"))
-print("El porcentaje de usuarios recurrentes frente a los totales es de:", len(recurrente) / len(number_of_users) * 100, end="%")
+print("El porcentaje de usuarios recurrentes frente a los totales es de:", len(recurrente) / len(number_of_users) * 100, end="%\n")
 
+#Unir a la tabla de navegacion si convierte o no.
+data = []
+only_user = navegacion["id_user"]
+for user in only_user:
+    convierte = False
+    for i in conversiones["id_user"]:
+        if user == i:
+            convierte = True
+    
+    if convierte:
+        data.append(1)
+    else:
+        data.append(0)
+
+navegacion["convierte"] = data
+#Ahora navegacio contiene todos los datos de si ese usuario convierte o no.
+
+#Ver cual es el coche más visitado de la página.
+cars = {
+    
+}
+urls = navegacion["url_landing"]
+for url in urls:
+    m = re.search("http(?:s?):\/(?:\/?)www\.metropolis\.com\/es\/(.+?)\/.*", url)
+    if m != None:
+        if m.groups()[0] in cars:
+            cars[m.groups()[0]] += 1
+        else:
+            cars[m.groups()[0]] = 1
+        
+
+for car in cars.keys():
+    print("El coche", car, "ha sido buscado", cars[car], "veces")
